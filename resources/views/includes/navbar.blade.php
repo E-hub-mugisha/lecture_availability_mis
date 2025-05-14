@@ -38,7 +38,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="studentDropdown">
                         <li><a class="dropdown-item" href="{{ route('admin.students.index') }}"><i class="fas fa-list"></i> All Students</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.students.appointments', ['student' => Auth::id()]) }}"><i class="fas fa-calendar"></i> Student Appointments</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.students.appointments') }}"><i class="fas fa-calendar"></i> Student Appointments</a></li>
                     </ul>
                 </li>
 
