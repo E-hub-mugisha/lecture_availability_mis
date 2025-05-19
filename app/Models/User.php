@@ -92,7 +92,7 @@ class User extends Authenticatable
      */
     public function lecturer()
     {
-        return $this->hasOne(Lecture::class);
+        return $this->hasOne(Lecturer::class);
     }
     public function appointments()
     {

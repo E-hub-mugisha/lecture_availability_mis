@@ -34,8 +34,8 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ optional($appointment->student)->names ?? 'N/A' }}</td>
-                            <td>{{ optional($appointment->availability)->start_time ? \Carbon\Carbon::parse($appointment->availability->start_time)->format('h:i A') : 'N/A' }}</td>
-                            <td>{{ optional($appointment->availability)->date ? \Carbon\Carbon::parse($appointment->availability->date)->format('M d, Y') : 'N/A' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($appointment->date)->format('l, F j, Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($appointment->time)->format('g:i A') }}</td>
                             <td>
                                 <span class="badge 
                                     @if($appointment->status == 'pending') bg-warning 

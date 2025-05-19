@@ -23,8 +23,8 @@ class Lecturer extends Model
      * Define the relationship with the LectureAvailability model.
      * A lecture has many available timeslots.
      */
-    public function lectureAvailabilities()
+    public function lecturerAvailabilities()
     {
-        return $this->hasMany(LectureAvailability::class, 'lecturer_id');
+        return $this->hasMany(LecturerAvailability::class, 'lecturer_id');
     }
 }

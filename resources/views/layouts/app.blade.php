@@ -33,7 +33,6 @@
             @yield('content')
         </main>
 
-        @include('includes.footer')
     </div>
 
     <!-- Scripts -->

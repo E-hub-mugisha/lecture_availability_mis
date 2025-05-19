@@ -51,7 +51,7 @@ class Appointment extends Model
      */
     public function availability()
     {
-        return $this->belongsTo(LectureAvailability::class, 'availability_id');
+        return $this->belongsTo(LecturerAvailability::class, 'availability_id');
     }
 
     /**
@@ -64,5 +64,9 @@ class Appointment extends Model
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'student_id');
     }
 }

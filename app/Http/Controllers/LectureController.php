@@ -5,33 +5,67 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Department;
-use App\Models\Lecture;
-use App\Models\LectureAvailability;
+use App\Models\Lecturer;
+use App\Models\LecturerAvailability;
 use App\Models\Student;
 use App\Models\StudentAvailability;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LectureController extends Controller
 {
+    public function dashboard()
+    {
+        $lecturer = Auth::user()->lecturer;
+
+        // All appointments for this lecturer
+        $appointments = Appointment::where('lecturer_id', $lecturer->id)->get();
+
+        // Upcoming appointments
+        $upcomingAppointments = $appointments->where('appointment_date', '>=', Carbon::today());
+
+        // Weekly appointment count (last 7 days)
+        $weeklyData = Appointment::selectRaw('DATE(appointment_date) as date, COUNT(*) as count')
+            ->where('lecturer_id', $lecturer->id)
+            ->where('appointment_date', '>=', Carbon::now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $labels = $weeklyData->pluck('date')->map(fn($d) => Carbon::parse($d)->format('M d'))->toArray();
+        $data = $weeklyData->pluck('count')->toArray();
+
+        return view('lecturer.dashboard', compact('appointments', 'upcomingAppointments', 'labels', 'data'));
+    }
     public function index()
     {
-        $lecturer = Lecture::where('user_id', Auth::user()->id)->first();
-        $availabilities = LectureAvailability::all();
+        $lecturer = Lecturer::where('user_id', Auth::user()->id)->first();
+        $availabilities = LecturerAvailability::all();
         return view('lecturer.availability.index', compact('availabilities', 'lecturer'));
     }
 
     public function Availability()
     {
-        $lecturers = Lecture::where('user_id', Auth::id())->first();
-        $availabilities = LectureAvailability::where('lecturer_id', $lecturers->id)->get();
+        $lecturers = Lecturer::where('user_id', Auth::id())->first();
+        $availabilities = LecturerAvailability::where('lecturer_id', $lecturers->id)->get();
         return view('lecturer.availability.index', compact('availabilities'));
     }
 
     public function appointment()
     {
-        $lecturers = Lecture::where('user_id', Auth::id())->first();
-        $appointments = Appointment::where('lecturer_id', $lecturers->id)->get();
+        $lecturer = Lecturer::where('user_id', Auth::id())->first();
+
+        if (!$lecturer) {
+            abort(404, 'Lecturer not found');
+        }
+
+        // Get all availability IDs for the lecturer
+        $availabilityIds = LecturerAvailability::where('lecturer_id', $lecturer->id)->pluck('id');
+
+        // Fetch appointments for all the lecturer's availabilities
+        $appointments = Appointment::whereIn('availability_id', $availabilityIds)->get();
+
         return view('lecturer.appointments.index', compact('appointments'));
     }
 
@@ -43,21 +77,15 @@ class LectureController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i',
             'status' => 'required | in:available,unavailable,break,lunch,meeting,training',
-            
+
         ]);
 
-        $lecturer = Lecture::where('user_id', Auth::id())->first();
-        $existingAvailability = LectureAvailability::where('lecturer_id', $lecturer->id)
-            ->where('date', $request->date)
-            ->where('day', $request->day)
-            ->where('start_time', $request->start_time)
-            ->where('end_time', $request->end_time)
-            ->first();
-        if ($existingAvailability) {
-            return redirect()->back()->withErrors('This availability slot already exists.');
-        }
+        $user = Auth::user();
+        // Find the lecturer associated with the authenticated user
+        // Assuming the lecturer is linked to the user through a 'user_id' foreign key
+        $lecturer = Lecturer::where('user_id', $user->id)->first();
 
-        LectureAvailability::create([
+        LecturerAvailability::create([
             'lecturer_id' => $lecturer->id,
             'day' => $request->day,
             'date' => $request->date,
@@ -70,7 +98,7 @@ class LectureController extends Controller
     }
     public function destroy($id)
     {
-        $availability = LectureAvailability::findOrFail($id);
+        $availability = LecturerAvailability::findOrFail($id);
 
 
         // Delete the availability
@@ -102,7 +130,7 @@ class LectureController extends Controller
             return back()->withErrors('This slot is already booked.');
         }
 
-        $lecture = Lecture::where('user_id', Auth::id())->first();
+        $lecture = Lecturer::where('user_id', Auth::id())->first();
 
         // Create an appointment
         $appointment = new Appointment();
@@ -115,7 +143,7 @@ class LectureController extends Controller
         $appointment->save();
 
         // update lecture availability status
-        $lectureAvailability = LectureAvailability::findOrFail($lecture->id);
+        $lectureAvailability = LecturerAvailability::findOrFail($lecture->id);
         $lectureAvailability->status = 'requested';
         $lectureAvailability->availability_id = $appointment->id;
         $lectureAvailability->update();
@@ -129,7 +157,7 @@ class LectureController extends Controller
     }
     public function show()
     {
-        $lecture = Lecture::where('user_id', Auth::id())->first(); // Assuming user has one lecture profile
+        $lecture = Lecturer::where('user_id', Auth::id())->first(); // Assuming user has one lecture profile
         $departments = Department::all();
 
         return view('lecturer.profile.index', compact('lecture', 'departments'));
@@ -198,10 +226,10 @@ class LectureController extends Controller
         $availability->save(); // Use save() instead of update() to ensure it's saved properly
 
         // Get the lecturer ID
-        $lecturerId = Lecture::where('user_id', Auth::user()->id)->first();
+        $lecturerId = Lecturer::where('user_id', Auth::user()->id)->first();
 
         // Get the lecturer availability
-        $availability = LectureAvailability::findOrFail($availabilityId);
+        $availability = LecturerAvailability::findOrFail($availabilityId);
 
         // Create a new appointment record in the appointments table with the "requested" status
         $appointment = new Appointment(); // Assuming you have an Appointment model
@@ -223,5 +251,17 @@ class LectureController extends Controller
     {
         $students = Student::all();
         return view('lecturer.students.students', compact('students'));
+    }
+    public function viewSchedule()
+    {
+        $lecturer = Lecturer::where('user_id', Auth::id())->first();
+
+        $availabilities = LecturerAvailability::where('lecturer_id', $lecturer->id)
+            ->whereDate('date', '>=', now()) // Only future or today
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->get();
+
+        return view('lecturer.availability.schedule', compact('availabilities'));
     }
 }

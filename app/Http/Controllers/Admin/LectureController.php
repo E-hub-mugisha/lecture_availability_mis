@@ -8,6 +8,7 @@ use App\Models\Department;
 use App\Models\Lecture;
 use App\Models\LectureAvailability;
 use App\Models\Lecturer;
+use App\Models\LecturerAvailability;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -53,7 +54,7 @@ class LectureController extends Controller
     }
     public function availableLecture()
     {
-        $lectures = LectureAvailability::where('status', 'available')->get();
+        $lectures = LecturerAvailability::where('status', 'available')->get();
         return view('admin.lectures.available', compact('lectures'));
     }
     public function appointments()
@@ -120,7 +121,7 @@ class LectureController extends Controller
     public function availability($id)
     {
         $lecture = Lecturer::findOrFail($id);
-        $availabilities = LectureAvailability::where('lecturer_id', $id)->get();
+        $availabilities = LecturerAvailability::where('lecturer_id', $id)->get();
         return view('admin.lectures.availability', compact('lecture', 'availabilities'));
     }
     public function storeAvailability(Request $request, $id)
@@ -138,7 +139,7 @@ class LectureController extends Controller
         if (!$lecturer) {
             return redirect()->back()->with('error', 'Lecturer not found.');
         }
-        $existingAvailability = LectureAvailability::where('lecturer_id', $lecturer->id)
+        $existingAvailability = LecturerAvailability::where('lecturer_id', $lecturer->id)
             ->where('date', $request->date)
             ->where('day', $request->day)
             ->where('start_time', $request->start_time)
@@ -148,7 +149,7 @@ class LectureController extends Controller
             return redirect()->back()->withErrors('This availability slot already exists.');
         }
 
-        LectureAvailability::create([
+        LecturerAvailability::create([
             'lecturer_id' => $lecturer->id,
             'day' => $request->day,
             'date' => $request->date,
@@ -166,7 +167,7 @@ class LectureController extends Controller
             'time' => 'required'
         ]);
 
-        $lectures = LectureAvailability::findOrFail($id);
+        $lectures = LecturerAvailability::findOrFail($id);
         
         $appointments = new Appointment();
         $appointments->student_id = auth()->user()->id;
@@ -180,5 +181,41 @@ class LectureController extends Controller
         $lectures->save();
         return redirect()->back()->with('success', 'Appointment booked successfully!');
         
+    }
+    public function reschedule(Request $request, $id)
+    {
+        $request->validate([
+            'new_date' => 'required|date',
+            'new_time' => 'required',
+        ]);
+
+        $appointment = Appointment::findOrFail($id);
+        $appointment->update([
+            'appointment_date' => $request->new_date,
+            'time' => $request->new_time,
+            'status' => 'rescheduled',
+        ]);
+
+        return redirect()->back()->with('success', 'Appointment rescheduled successfully.');
+    }
+    public function approveAppointment($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->update(['status' => 'approved']);
+
+        return redirect()->back()->with('success', 'Appointment approved successfully.');
+    }
+    public function cancelAppointment($id)
+    {
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return redirect()->back()->with('error', 'The appointment does not exist.');
+        }
+
+        $appointment->update(['status' => 'canceled']);
+
+        return redirect()->back()
+            ->with('success', 'Appointment cancelled successfully.');
     }
 }

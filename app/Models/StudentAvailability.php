@@ -10,7 +10,6 @@ class StudentAvailability extends Model
     use HasFactory;
     protected $fillable = [
         'student_id',
-        'availability_id',
         'date',
         'day',
         'start_time',

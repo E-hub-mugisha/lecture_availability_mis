@@ -27,10 +27,10 @@ class Student extends Model
     public function availabilities()
     {
         return $this->hasManyThrough(
-            LectureAvailability::class,
+            LecturerAvailability::class,
             Appointment::class,
             'student_id',      // Foreign key on the appointments table
-            'id',              // Foreign key on the lecture_availabilities table
+            'id',              // Foreign key on the lecturer_availabilities table
             'id',              // Local key on the students table
             'availability_id'  // Local key on the appointments table
         );

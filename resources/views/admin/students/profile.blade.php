@@ -44,14 +44,14 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0"><i class="fas fa-phone"></i> Phone</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ $student->user->phone }}</div>
+                            <div class="col-sm-9 text-secondary">{{ $student->phone }}</div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
                                 <h6 class="mb-0"><i class="fas fa-map-marker-alt"></i> Address</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ $student->user->address }}</div>
+                            <div class="col-sm-9 text-secondary">{{ $student->address }}</div>
                         </div>
 
                         <!-- Buttons Section -->
@@ -112,26 +112,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('admin.lecturers.profile.update', $student->id) }}" method="POST">
+                <form action="{{ route('admin.students.profile.update', $student->id) }}" method="POST">
                     @csrf
-                    @method('PUT') <!-- Laravel requires PUT for updates -->
+                    @method('PUT') 
                     
                     <div class="form-group mb-3">
                         <label for="names">names</label>
                         <input type="text" class="form-control" id="names" name="names"
-                            value="{{ old('names', $student->user->names) }}" required autocomplete="off">
+                            value="{{ old('names', $student->names) }}" required>
                     </div>
 
                     <div class="form-group mb-3">
                         <label for="address">Address</label>
                         <input type="text" class="form-control" id="address" name="address"
-                            value="{{ old('address', $student->user->address) }}" required autocomplete="off">
+                            value="{{ old('address', $student->address) }}" required>
                     </div>
 
                     <div class="form-group mb-3">
                         <label for="phone">Phone</label>
                         <input type="text" class="form-control" id="phone" name="phone"
-                            value="{{ old('phone', $student->user->phone) }}" required autocomplete="off">
+                            value="{{ old('phone', $student->phone) }}" required>
                     </div>
                     <!-- Submit Button -->
                     <div class="form-group mt-2">

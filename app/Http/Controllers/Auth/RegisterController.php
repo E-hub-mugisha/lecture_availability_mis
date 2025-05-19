@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lecture;
+use App\Models\Lecturer;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -93,7 +94,7 @@ class RegisterController extends Controller
                 'student_number' => 'STD' . str_pad($user->id, 6, '0', STR_PAD_LEFT), // Generate student number
             ]);
         } elseif ($data['utype'] === 'lectures') {
-            Lecture::create([
+            Lecturer::create([
                 'user_id' => $user->id,
                 'staff_number' => 'LEC' . str_pad($user->id, 6, '0', STR_PAD_LEFT), // Generate staff number
                 'names' => $data['name'],

@@ -54,14 +54,15 @@
                 </li>
 
                 @elseif(Auth::user()->type == 'lectures')
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('lecturer.availability.index') }}"><i class="fas fa-calendar-check"></i> My Availability</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('lecturer.students.index') }}"><i class="fas fa-user-graduate"></i> Students</a>
+                    <a class="nav-link" href="{{ route('lecturer.schedule') }}"><i class="fas fa-calendar-check"></i> Upcoming</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('lecturer.students.all') }}"><i class="fas fa-calendar"></i> All Student</a>
+                    <a class="nav-link" href="{{ route('lecturer.students.all') }}"><i class="fas fa-calendar"></i> All Students</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('lecturer.appointments') }}"><i class="fas fa-book"></i> Appointments</a>
@@ -70,6 +71,16 @@
                     <a class="nav-link" href="{{ route('lecturer.profile') }}"><i class="fas fa-user-circle"></i> Profile</a>
                 </li>
                 @elseif(Auth::user()->type == 'students')
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('students.dashboard.index') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="fas fa-user-circle"></i> Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('student.lecturers') }}"><i class="fas fa-chalkboard-teacher"></i> Lecturers</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('student.lecture.available') }}"><i class="fas fa-calendar"></i> Lecture Available</a>
                 </li>

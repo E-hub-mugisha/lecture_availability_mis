@@ -39,7 +39,7 @@
                                 <td>{{ $student->student_number }}</td>
                                 <td>{{ $student->user->name }}</td>
                                 <td>{{ $student->user->email }}</td>
-                                <td>{{ $student->user->phone }}</td>
+                                <td>{{ $student->phone }}</td>
                                 <td>
                                     <a href="{{ route('admin.students.profile', $student->id) }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-eye"></i> Profile

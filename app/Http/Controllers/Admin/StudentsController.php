@@ -61,5 +61,24 @@ class StudentsController extends Controller
         $appointments = $student->appointments()->with('lecturer')->get();
         return view('admin.students.appointments', compact('student', 'appointments'));
     }
-    
+    public function updateStudent(Request $request, $id)
+    {
+        $request->validate([
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'names' => 'required|string|max:255',
+        ]);
+
+        // Find the student and ensure it exists
+        $student = Student::findOrFail($id);
+
+        // Update user details
+        $student->update([
+            'names' => $request->names,
+            'address' => $request->address,
+            'phone' => $request->phone,
+        ]);
+
+        return redirect()->back()->with('success', 'Students info updated successfully');
+    }
 }
