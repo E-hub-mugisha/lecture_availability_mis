@@ -12,6 +12,7 @@ use App\Models\StudentAvailability;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class LectureController extends Controller
 {
@@ -57,7 +58,7 @@ class LectureController extends Controller
         $lecturer = Lecturer::where('user_id', Auth::id())->first();
 
         if (!$lecturer) {
-            abort(404, 'Lecturer not found');
+            return redirect()->back()->with('error', 'Lecturer profile not found.');
         }
 
         // Get all availability IDs for the lecturer
@@ -114,47 +115,7 @@ class LectureController extends Controller
         return view('lecturer.students.index', compact('availabilities'));
     }
     // Lecturer books an appointment
-    public function bookAppointment(Request $request, $student)
-    {
-        $request->validate([
-            'availability_id' => 'required|exists:student_availabilities,id',
-            'student_id' => 'required|exists:students,id',
-            'student_availability_id' => 'required|exists:student_availabilities,id',
-        ]);
-
-        // Fetch the availability slot
-        $availability = StudentAvailability::findOrFail($request->student_availability_id);
-
-        // Check if the slot is still available
-        if ($availability->status == 'booked') {
-            return back()->withErrors('This slot is already booked.');
-        }
-
-        $lecture = Lecturer::where('user_id', Auth::id())->first();
-
-        // Create an appointment
-        $appointment = new Appointment();
-        $appointment->student_id = $student;
-        $appointment->lecturer_id = $lecture->id;
-        $appointment->availability_id = $availability->id;
-        $appointment->appointment_date = $availability->date;
-        $appointment->time = $availability->start_time;
-        $appointment->status = 'pending';
-        $appointment->save();
-
-        // update lecture availability status
-        $lectureAvailability = LecturerAvailability::findOrFail($lecture->id);
-        $lectureAvailability->status = 'requested';
-        $lectureAvailability->availability_id = $appointment->id;
-        $lectureAvailability->update();
-
-        // Update the availability status to 'booked'
-        $availability->availability_id = $appointment->id;
-        $availability->status = 'request';
-        $availability->update();
-
-        return redirect()->back()->with('success', 'Appointment requested successfully!');
-    }
+    
     public function show()
     {
         $lecture = Lecturer::where('user_id', Auth::id())->first(); // Assuming user has one lecture profile
@@ -182,6 +143,7 @@ class LectureController extends Controller
     }
     public function reschedule(Request $request, $id)
     {
+        
         $request->validate([
             'new_date' => 'required|date',
             'new_time' => 'required',
@@ -193,6 +155,19 @@ class LectureController extends Controller
             'time' => $request->new_time,
             'status' => 'rescheduled',
         ]);
+
+        $availability = LecturerAvailability::findOrFail($appointment->availability_id);
+
+        $lecturerEmail = $availability->lecturer->user->email ?? null;
+        $studentEmail = $appointment->student->user->email ?? null;
+
+        if ($lecturerEmail) {
+            Mail::to($lecturerEmail)->send(new \App\Mail\AppointmentBooked($appointment));
+        }
+
+        if ($studentEmail) {
+            Mail::to($studentEmail)->send(new \App\Mail\AppointmentBookedStudent($appointment));
+        }
 
         return redirect()->back()->with('success', 'Appointment rescheduled successfully.');
     }
@@ -256,8 +231,12 @@ class LectureController extends Controller
     {
         $lecturer = Lecturer::where('user_id', Auth::id())->first();
 
+        if (!$lecturer) {
+            return redirect()->back()->with('error', 'Lecturer profile not found.');
+        }
+
         $availabilities = LecturerAvailability::where('lecturer_id', $lecturer->id)
-            ->whereDate('date', '>=', now()) // Only future or today
+            ->whereDate('date', '>=', now())
             ->orderBy('date')
             ->orderBy('start_time')
             ->get();

@@ -18,34 +18,38 @@ use Illuminate\Support\Facades\Mail;
 class StudentController extends Controller
 {
     public function dashboard()
-    {
-        $student = Student::findOrFail(Auth::user()->id); // assuming User hasOne Student
+{
+    $student = Student::where('user_id', Auth::id())->first();
 
-        // Total appointments count
-        $totalAppointments = Appointment::where('student_id', $student->id)->count();
+    if (!$student) {
+        return redirect()->back()->with('error', 'Student profile not found.');
+    }
 
-        // Upcoming appointments count
-        $upcomingAppointments = Appointment::where('student_id', $student->id)
-            ->where('appointment_date', '>=', Carbon::today())
+    // Total appointments count
+    $totalAppointments = Appointment::where('student_id', $student->id)->count();
+
+    // Upcoming appointments count
+    $upcomingAppointments = Appointment::where('student_id', $student->id)
+        ->where('appointment_date', '>=', Carbon::today())
+        ->count();
+
+    // Prepare data for a simple weekly appointments chart (next 7 days)
+    $dates = [];
+    $counts = [];
+
+    for ($i = 0; $i < 7; $i++) {
+        $date = Carbon::today()->addDays($i)->format('Y-m-d');
+        $dates[] = Carbon::today()->addDays($i)->format('M d');
+
+        $count = Appointment::where('student_id', $student->id)
+            ->where('appointment_date', $date)
             ->count();
 
-        // Prepare data for a simple weekly appointments chart (next 7 days)
-        $dates = [];
-        $counts = [];
-
-        for ($i = 0; $i < 7; $i++) {
-            $date = Carbon::today()->addDays($i)->format('Y-m-d');
-            $dates[] = Carbon::today()->addDays($i)->format('M d');
-
-            $count = Appointment::where('student_id', $student->id)
-                ->where('appointment_date', $date)
-                ->count();
-
-            $counts[] = $count;
-        }
-
-        return view('studen.dashboard', compact('totalAppointments', 'upcomingAppointments', 'dates', 'counts'));
+        $counts[] = $count;
     }
+
+    return view('students.dashboard', compact('totalAppointments', 'upcomingAppointments', 'dates', 'counts'));
+}
     public function lectureAvailable()
     {
         // Fetch available lecturers and their available times
@@ -99,7 +103,12 @@ class StudentController extends Controller
     }
     public function appointment()
     {
-        $student = Student::where('user_id', Auth::user()->id)->first();
+        $user = Auth::user();
+        $student = Student::where('user_id', $user->id)->first();
+
+        if (!$student) {
+            return redirect()->back()->with('error', 'Student profile not found.');
+        }
 
         $appointments = Appointment::where('student_id', $student->id)->get();
 
@@ -132,10 +141,17 @@ class StudentController extends Controller
     }
     public function studentAvailablity()
     {
-        $students = Student::where('user_id', Auth::id())->first();
-        $availabilities = StudentAvailability::where('student_id', $students->id)->get();
+        $user = Auth::user();
+        $student = Student::where('user_id', $user->id)->first();
+
+        if (!$student) {
+            return redirect()->back()->with('error', 'Student profile not found.');
+        }
+
+        $availabilities = StudentAvailability::where('student_id', $student->id)->get();
         return view('students.availabilities.index', compact('availabilities'));
     }
+
     public function storeAvailability(Request $request)
     {
         $request->validate([

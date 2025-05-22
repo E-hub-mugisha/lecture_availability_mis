@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Department;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -14,6 +15,8 @@ class StudentsSeeder extends Seeder
      */
     public function run(): void
     {
+        $departments = Department::pluck('id')->toArray(); // Get existing department IDs
+
         for ($i = 1; $i <= 5; $i++) {
             // Create user with type = 0 (student)
             $user = User::create([
@@ -30,6 +33,7 @@ class StudentsSeeder extends Seeder
                 'names' => $user->name,
                 'address' => 'Building ' . chr(64 + $i) . ', Campus',
                 'phone' => '07880000' . $i . $i,
+                'department_id' => $departments[array_rand($departments)] ?? null,
             ]);
         }
     }

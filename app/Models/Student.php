@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'student_number', 'names'];
+    protected $fillable = ['user_id', 'student_number', 'names', 'department_id','phone', 'address'];
 
     public function user()
     {
@@ -34,5 +34,9 @@ class Student extends Model
             'id',              // Local key on the students table
             'availability_id'  // Local key on the appointments table
         );
+    }
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

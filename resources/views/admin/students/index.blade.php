@@ -15,9 +15,9 @@
                 <div class="card-body">
                     <!-- Success Message -->
                     @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
                     @endif
 
                     <!-- Student Table with DataTable plugin for sorting and searching -->
@@ -44,7 +44,7 @@
                                     <a href="{{ route('admin.students.profile', $student->id) }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-eye"></i> Profile
                                     </a>
-                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="{{ $student->id }}">
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ $student->id }}">
                                         <i class="fas fa-trash-alt"></i> Delete
                                     </button>
                                 </td>
@@ -88,6 +88,14 @@
                                 <label for="address" class="form-label">Address</label>
                                 <input type="text" class="form-control" id="address" name="address" placeholder="Enter address" required>
                             </div>
+                            <div class="form-group mb-3">
+                                <label for="department">Department</label>
+                                <select class="form-control" id="department" name="department_id">
+                                    @foreach($departments as $department)
+                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Close</button>
@@ -99,7 +107,8 @@
         </div>
 
         <!-- Confirm Delete Modal -->
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+         @foreach($students as $student)
+        <div class="modal fade" id="confirmDeleteModal{{ $student->id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -111,8 +120,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
-                        <form action="{{ url('admin/students/delete') }}" method="POST" id="deleteStudentForm">
+                        <form action="{{ route('admin.students.destroy', $student->id ) }}" method="POST" >
                             @csrf
+                            @method('DELETE')
                             <input type="hidden" name="student_id" id="student_id">
                             <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
                         </form>
@@ -120,6 +130,7 @@
                 </div>
             </div>
         </div>
+        @endforeach
     </div>
 </div>
 
@@ -129,7 +140,7 @@
 <script>
     // Handle student deletion modal
     var deleteModal = document.getElementById('confirmDeleteModal');
-    deleteModal.addEventListener('show.bs.modal', function (event) {
+    deleteModal.addEventListener('show.bs.modal', function(event) {
         var button = event.relatedTarget; // Button that triggered the modal
         var studentId = button.getAttribute('data-id'); // Extract info from data-* attributes
 

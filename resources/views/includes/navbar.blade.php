@@ -38,7 +38,6 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="studentDropdown">
                         <li><a class="dropdown-item" href="{{ route('admin.students.index') }}"><i class="fas fa-list"></i> All Students</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.students.appointments') }}"><i class="fas fa-calendar"></i> Student Appointments</a></li>
                     </ul>
                 </li>
 
@@ -48,8 +47,6 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="appointmentsDropdown">
                         <li><a class="dropdown-item" href="{{ route('admin.appointments.index') }}"><i class="fas fa-list"></i> All Appointments</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.appointments.create') }}"><i class="fas fa-plus-circle"></i> Schedule Appointment</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.appointments.history') }}"><i class="fas fa-history"></i> Appointment History</a></li>
                     </ul>
                 </li>
 
@@ -61,9 +58,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('lecturer.schedule') }}"><i class="fas fa-calendar-check"></i> Upcoming</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('lecturer.students.all') }}"><i class="fas fa-calendar"></i> All Students</a>
-                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('lecturer.appointments') }}"><i class="fas fa-book"></i> Appointments</a>
                 </li>

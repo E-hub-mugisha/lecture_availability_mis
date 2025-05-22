@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('names');
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
+            $table->foreignId('department_id')->constrained('departments')->onDelete('cascade')->nullable(); // Link to the department
             $table->timestamps();
         });
     }

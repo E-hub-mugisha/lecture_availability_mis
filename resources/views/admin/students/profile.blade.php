@@ -53,6 +53,14 @@
                             </div>
                             <div class="col-sm-9 text-secondary">{{ $student->address }}</div>
                         </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Department</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                {{ $student->department->name ?? 'N/A' }}
+                            </div>
+                        </div>
 
                         <!-- Buttons Section -->
                         <div class="row">
@@ -132,6 +140,14 @@
                         <label for="phone">Phone</label>
                         <input type="text" class="form-control" id="phone" name="phone"
                             value="{{ old('phone', $student->phone) }}" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="department">Department</label>
+                        <select class="form-control" id="department" name="department_id">
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}" {{ $student->department_id == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <!-- Submit Button -->
                     <div class="form-group mt-2">

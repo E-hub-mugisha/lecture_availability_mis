@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -25,9 +25,23 @@ class LoginController extends Controller
     /**
      * Where to redirect users after login.
      *
-     * @var string
+     * @return string
      */
-    protected $redirectTo = '/home';
+    protected function redirectTo()
+    {
+        $user = Auth::user();
+
+        if ($user->type === 1) {
+            return route('admin.dashboard.index'); // or '/admin/dashboard'
+        } elseif ($user->type === 0) {
+            return route('students.dashboard.index'); // or '/students/dashboard'
+        } elseif ($user->type === 2) {
+            return route('lecturer.dashboard.index'); // or '/lecturer/dashboard'
+        }
+
+        // Default redirect path if type does not match above
+        return '/home';
+    }
 
     /**
      * Create a new controller instance.
@@ -37,28 +51,5 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
-    }
-    public function login(Request $request)
-    {
-        $input = $request->all();
-
-        $this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-            if (auth()->user()->type == 1) {
-                return redirect()->route('admin.dashboard.index');
-            } else if (auth()->user()->type == 2) {
-                return redirect()->route('lecturer.availability.index');
-            } else {
-                return redirect()->route('home');
-            }
-        } else {
-            return redirect()->route('login')
-                ->with('error', 'Email-Address And Password Are Wrong.');
-        }
     }
 }
