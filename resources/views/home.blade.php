@@ -1,48 +1,95 @@
 @extends('layouts.app')
+
 @section('title', 'Home')
+
 @section('content')
-<div class="container">
+<style>
+    body {
+        background: url('{{ asset('assets/img/background.webp') }}') no-repeat center center fixed;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+
+    .custom-card {
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(3px);
+        border-radius: 1rem;
+    }
+</style>
+
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-        
-            {{-- User Information Card --}}
-            <div class="card mb-4">
-                <div class="card-header">{{ __('User Information') }}</div>
+        <div class="col-md-10">
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+            {{-- Welcome Section --}}
+            <div class="card shadow-sm border-0 mb-4 custom-card">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold mb-3">Welcome to the Lecturer Availability Management System</h3>
+                    <p class="text-muted">Easily schedule appointments and manage availability between lecturers and students.</p>
 
-                    <p><strong>Name:</strong> {{ Auth::user()->name }}</p>
-                    <p><strong>Email:</strong> {{ Auth::user()->email }}</p>
-                    <p><strong>Account Type:</strong> 
-                        @if(Auth::user()->type == 1)
-                            Admin
-                        @elseif(Auth::user()->type == 2)
-                            Lecturer
+                    {{-- Guest Buttons --}}
+                    @guest
+                        <a href="{{ route('login') }}" class="btn btn-outline-primary mt-3 px-4">
+                            Login to Get Started
+                        </a>
+                        <a href="{{ route('register') }}" class="btn btn-outline-secondary mt-3 px-4 ms-2">
+                            Register
+                        </a>
+                    @endguest
+
+                    {{-- Authenticated Buttons --}}
+                    @auth
+                        @if (Auth::user()->role == 'lecturer')
+                            <a href="{{ route('lecturer.availability') }}" class="btn btn-success mt-3 px-4">
+                                Manage Availability
+                            </a>
+                        @elseif (Auth::user()->role == 'student')
+                            <a href="{{ route('student.appointments') }}" class="btn btn-primary mt-3 px-4">
+                                Book Appointment
+                            </a>
                         @else
-                            Student
+                            <a href="{{ url('/dashboard') }}" class="btn btn-dark mt-3 px-4">
+                                Go to Dashboard
+                            </a>
                         @endif
-                    </p>
-
-                    <p class="mt-3">You are successfully logged in.</p>
+                    @endauth
                 </div>
             </div>
 
-            {{-- About Us Card --}}
-            <div class="card">
-                <div class="card-header">{{ __('About Us') }}</div>
+            {{-- User Info --}}
+            @auth
+                <div class="card mb-4 shadow-sm border-0 custom-card">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-person-check-fill me-2"></i> User Information
+                    </div>
+                    <div class="card-body">
+                        @if (session('status'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ session('status') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
 
+                        <h5>Hello, <strong>{{ Auth::user()->name }}</strong>!</h5>
+                        <p class="mb-0">You are logged in as a <strong>{{ ucfirst(Auth::user()->role) }}</strong>.</p>
+                    </div>
+                </div>
+            @endauth
+
+            {{-- About Us --}}
+            <div class="card shadow-sm border-0 custom-card">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-info-circle me-2"></i> About Us
+                </div>
                 <div class="card-body">
                     <p>
-                        Welcome to the Lecturer Availability Management System. This platform is designed to streamline appointment scheduling between students and lecturers. 
-                        Our goal is to improve academic engagement and minimize scheduling conflicts by providing a centralized, easy-to-use interface for all users.
+                        The <strong>Lecturer Availability Management System</strong> helps simplify academic scheduling between students and lecturers.
                     </p>
                     <p>
-                        If you have any questions or feedback, please don't hesitate to reach out to our support team. We’re here to help you make the most of your academic journey.
+                        Whether you're booking an appointment or managing availability, this platform offers a centralized, easy-to-use experience.
+                    </p>
+                    <p class="mb-0">
+                        Have questions? Contact support—we’re here to help.
                     </p>
                 </div>
             </div>

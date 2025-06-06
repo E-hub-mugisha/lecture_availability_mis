@@ -21,14 +21,14 @@ class LectureController extends Controller
         $lecturer = Auth::user()->lecturer;
 
         // All appointments for this lecturer
-        $appointments = Appointment::where('lecturer_id', $lecturer->id)->get();
+        $appointments = Appointment::where('availability_id', $lecturer->id)->get();
 
         // Upcoming appointments
         $upcomingAppointments = $appointments->where('appointment_date', '>=', Carbon::today());
 
         // Weekly appointment count (last 7 days)
         $weeklyData = Appointment::selectRaw('DATE(appointment_date) as date, COUNT(*) as count')
-            ->where('lecturer_id', $lecturer->id)
+            ->where('availability_id', $lecturer->id)
             ->where('appointment_date', '>=', Carbon::now()->subDays(7))
             ->groupBy('date')
             ->orderBy('date')

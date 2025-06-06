@@ -10,10 +10,10 @@
 
             <div class="col-sm-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
                 <ul class="list-unstyled text-sm-right social-icon social mb-0">
-                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fas fa-facebook" title="Facebook"></i></a></li>
-                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fas fa-instagram" title="Instagram"></i></a></li>
-                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fas fa-twitter" title="Twitter"></i></a></li>
-                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fas fa-linkedin" title="LinkedIn"></i></a></li>
+                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fab fa-facebook" title="Facebook"></i></a></li>
+                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fab fa-instagram" title="Instagram"></i></a></li>
+                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fab fa-twitter" title="Twitter"></i></a></li>
+                    <li class="list-inline-item"><a href="#" class="rounded"><i class="fab fa-linkedin" title="LinkedIn"></i></a></li>
                 </ul><!--end icon-->
             </div><!--end col-->
         </div><!--end row-->

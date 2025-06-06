@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
-            <i class="fas fa-school"></i> {{ config('app.name', 'Laravel') }}
+            <img src="{{ asset('assets/img/MKUR-logo.png') }}" alt="Logo" class="navbar-logo" style="height: 50px;">
+            
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
