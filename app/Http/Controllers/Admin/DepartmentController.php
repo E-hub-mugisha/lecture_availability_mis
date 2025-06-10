@@ -56,8 +56,6 @@ class DepartmentController extends Controller
     public function destroy(Department $department)
     {
         // Set department_id to null for all lecturers assigned to this department
-        Lecture::where('department_id', $department->id)->update(['department_id' => null]);
-
         $department->delete();
         return redirect()->route('admin.departments.index')->with('success', 'Department deleted successfully.');
     }
@@ -65,7 +63,7 @@ class DepartmentController extends Controller
     public function assignLecturer(Request $request)
     {
         $request->validate([
-            'lecturer_id' => 'required|exists:lectures,id', // Use 'lecturers' instead of 'lectures'
+            'lecturer_id' => 'required|exists:lecturers,id', // Use 'lecturers' instead of 'lectures'
             'department_id' => 'required|exists:departments,id'
         ]);
 

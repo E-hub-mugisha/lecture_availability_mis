@@ -123,19 +123,23 @@ class LectureController extends Controller
 
         return view('lecturer.profile.index', compact('lecture', 'departments'));
     }
-    public function updateLecture(Request $request)
+    public function updateLecture(Request $request, $id)
     {
         $request->validate([
-            'staff_number' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'department_id' => 'nullable',
             'names' => 'required|string|max:255',
-            'department_id' => 'required|exists:departments,id',
         ]);
 
-        $lecture = Auth::user()->lecture;
+        // Find the lecture and ensure it exists
+        $lecture = Lecturer::find($id);
 
+        // Update user details
         $lecture->update([
-            'staff_number' => $request->staff_number,
             'names' => $request->names,
+            'address' => $request->address,
+            'phone' => $request->phone,
             'department_id' => $request->department_id,
         ]);
 

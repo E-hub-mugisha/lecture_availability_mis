@@ -44,14 +44,14 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0"><i class="fas fa-phone"></i> Phone</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ $lecture->user->phone }}</div>
+                            <div class="col-sm-9 text-secondary">{{ $lecture->phone }}</div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
                                 <h6 class="mb-0"><i class="fas fa-map-marker-alt"></i> Address</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ $lecture->user->address }}</div>
+                            <div class="col-sm-9 text-secondary">{{ $lecture->address }}</div>
                         </div>
                         <hr>
                         <div class="row">

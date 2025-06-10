@@ -12,12 +12,12 @@ Route::get('/', function () {
     return view('home');
 });
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', function () {
+    return view('home');
+})->name('home');
 
 
 Auth::routes();
-
-
 
 
 /*------------------------------------------
@@ -121,7 +121,7 @@ Route::middleware(['auth', 'user-access:lectures'])->group(function () {
     Route::post('lecturer/book/{student}', [LectureController::class, 'bookAppointment'])->name('lecturer.book.student');
     Route::get('/manager/home', [HomeController::class, 'managerHome'])->name('manager.home');
     Route::get('/lecturer/profile', [LectureController::class, 'show'])->name('lecturer.profile');
-    Route::post('/lecturer/profile', [LectureController::class, 'updateLecture'])->name('lecturer.profile.update');
+    Route::put('/lecturer/profile/{id}', [LectureController::class, 'updateLecture'])->name('lecturer.profile.update');
     Route::post('/lecturer/department', [LectureController::class, 'updateDepartment'])->name('lecturer.department.update');
     Route::put('/lecturer/appointments/{id}/reschedule', [LectureController::class, 'reschedule'])->name('lecturer.appointments.reschedule');
     Route::put('/lecturer/appointments/{id}/cancel', [LectureController::class, 'cancelAppointment'])->name('lecturer.appointments.cancel');

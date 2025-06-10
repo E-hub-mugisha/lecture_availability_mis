@@ -22,6 +22,21 @@ class LectureController extends Controller
         $departments = Department::all();
         return view('admin.lectures.index', compact('lectures', 'departments'));
     }
+    public function destroy($id)
+    {
+        $lecture = Lecturer::findOrFail($id);
+        if ($lecture) {
+            $lecture->delete();
+            return redirect()->back()->with('success', 'Lecture deleted successfully.');
+        }
+        return redirect()->back()->with('error', 'Lecture not found.');
+    }
+    public function create()
+    {
+        $departments = Department::all();
+        return view('admin.lectures.create', compact('departments'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -90,26 +105,15 @@ class LectureController extends Controller
         $request->validate([
             'address' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
-            'department_id' => 'nullable|exists:departments,id',
+            'department_id' => 'nullable',
             'names' => 'required|string|max:255',
         ]);
 
         // Find the lecture and ensure it exists
         $lecture = Lecturer::find($id);
 
-        if (!$lecture) {
-            return redirect()->back()->with('error', 'Lecture not found.');
-        }
-
-        // Find the associated user
-        $user = Lecturer::find($lecture->user_id);
-
-        if (!$user) {
-            return redirect()->back()->with('error', 'Associated user not found.');
-        }
-
         // Update user details
-        $user->update([
+        $lecture->update([
             'names' => $request->names,
             'address' => $request->address,
             'phone' => $request->phone,

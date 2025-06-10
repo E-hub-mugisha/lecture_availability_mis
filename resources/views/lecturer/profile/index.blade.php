@@ -104,8 +104,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('lecturer.profile.update') }}" method="POST">
+                <form action="{{ route('lecturer.profile.update', $lecture->id) }}" method="POST">
                     @csrf
+                    @method('PUT') <!-- Laravel requires PUT for updates -->
                     <div class="form-group mb-3">
                         <label for="name">Full Name</label>
                         <input type="text" class="form-control" id="name" name="name" value="{{ $lecture->user->name }}" required>
@@ -117,11 +118,11 @@
                     <!-- Other fields to update -->
                     <div class="form-group mb-3">
                         <label for="phone">Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $lecture->phone ?? 'N/A' }}">
+                        <input type="text" class="form-control" id="phone" name="phone">
                     </div>
                     <div class="form-group mb-3">
                         <label for="address">Address</label>
-                        <input type="text" class="form-control" id="address" name="address" value="{{ $lecture->address ?? 'N/A' }}">
+                        <input type="text" class="form-control" id="address" name="address" >
                     </div>
                     <div class="form-group mb-3">
                         <label for="department">Department</label>
